@@ -1,4 +1,4 @@
-FROM jenkins/jenkins:lts
+FROM jenkins/jenkins:2.187
 
 # install docker, docker-compose, docker-machine
 # see: https://docs.docker.com/engine/installation/linux/docker-ce/ubuntu/
@@ -33,3 +33,11 @@ RUN curl -L https://github.com/docker/compose/releases/download/1.16.1/docker-co
 RUN usermod -aG docker jenkins
 
 USER jenkins
+COPY plugins_extra.txt /usr/share/jenkins/ref/plugins_extra.txt
+
+ENV JENKINS_HOME /var/jenkins_home
+
+ARG JAVA_OPTS
+ENV JAVA_OPTS "-Djenkins.install.runSetupWizard=false ${JAVA_OPTS:-}"
+
+RUN xargs /usr/local/bin/install-plugins.sh < /usr/share/jenkins/ref/plugins_extra.txt
